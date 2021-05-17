@@ -10,6 +10,9 @@ body{
     justify-content: center;
 }
 
+#container {
+  position: relative;
+}
 canvas{
   margin-top: 10px;
   background-color: white;
@@ -20,3 +23,28 @@ canvas{
   background-size: 800px 1200px;
   background-image: url("./img/AmongUsBackground.png");
 }
+
+#player {
+  position: absolute;
+  width: 60px;
+  height: 80px;
+  background-size: 60px 80px;
+  background-image: url("./img/player.png");
+}
+
+#enemy {
+  position: absolute;
+  width: 100px;
+  height: 70px;
+  background-size: 100px 70px;
+  background-image: url("./img/BAUCrewmate.png");
+}
+
+#BigEnemy {
+  position: absolute;
+  width: 55px;
+  height: 90px;
+  background-size: 55px 90px;
+  background-image: url("./img/RedBoss.png");
+}
+

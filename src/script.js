@@ -1,12 +1,9 @@
 let canvas = document.getElementById("canvas");
-let plyr = document.getElementById("player");
-let enmy = document.getElementById("enemy");
 let vent = document.getElementById("Vent");
-let RedBoss = document.getElementById("RedBoss");
 let knife = document.getElementById("Knife");
 let plyrShoot = document.getElementById("UZltYi");
 let context = canvas.getContext("2d");
-
+let container = document.getElementById("container");
 
 class shoot {
     isShoting= false;
@@ -21,18 +18,30 @@ class shoot {
 }
 
 let score = 0;
-let player = {
-    isGameOver: false,
-    hasWon: false,
-    level: 1,
-    w: 60,
-    h: 80,
-    x: canvas.width / 2,
-    y: canvas.height - 100,
-    speed: 5,
-    dx: 0,
-    shot :new shoot(15,20)
+class Player {
+    isGameOver= false;
+    hasWon= false;
+    level= 1;
+    w= 60;
+    h= 80;
+    x= canvas.width / 2;
+    y= canvas.height - 100;
+    speed= 5;
+    dx= 0;
+    shot =new shoot(15,20);
+    constructor(){
+        this.s = document.createElement("div"),
+        this.s.setAttribute("id", "player"),
+        this.s.style.top = this.y + "px",
+        this.s.style.left = this.x + "px"
+        container.append(this.s)
+    }
+    update(){
+        this.s.style.left = this.x + "px"
+    }
 }
+let player = new Player();
+
 const numOfRockets = 4;
 let AllRockets = []
 class Rock {
@@ -53,6 +62,16 @@ class Enemy {
     dy = 0;
     speed = Math.floor(Math.random() * 3) + (1 / 2); // random speed (1/2 , 3)
     isActive = false
+    constructor(){
+        this.s = document.createElement("div"),
+        this.s.setAttribute("id", "enemy"),
+        this.s.style.top = this.y + "px",
+        this.s.style.left = this.x + "px"
+    }
+    update(){
+        this.s.style.top = this.y + "px",
+        this.s.style.left = this.x + "px"
+    }
 }
 class bigEnemy extends Enemy {
     w = 55;
@@ -60,6 +79,13 @@ class bigEnemy extends Enemy {
     dx = 6;
     dy = 8;
     shot = new shoot(15,26);
+    constructor(){
+        super(),
+        this.s = document.createElement("div"),
+        this.s.setAttribute("id", "BigEnemy"),
+        this.s.style.top = this.y + "px",
+        this.s.style.left = this.x + "px"
+    }
 }
 
  ///////////////////////
@@ -101,16 +127,16 @@ function printMessage(msg, backgroundColor, textColor){
 }
 function drawPlayer(){
     player.x += player.dx;
+    player.update()
     if (player.x < 0) player.x = 0;
     else if (player.x > canvas.width - 70) player.x = canvas.width - 70;
-    context.drawImage(plyr, player.x, player.y, player.w, player.h);
 }
 big = new bigEnemy();
 function drawBigEnemy() {
     big.isActive = true;
-    context.drawImage(RedBoss, big.x, big.y, big.w, big.h);
     big.y += big.dy;
     big.x += big.dx;
+    big.update()
     if (big.x + big.w >= canvas.width) {big.dx = -big.speed;}
     if (big.y + big.h >= canvas.height - 300) {big.dy = - big.speed;}
     if ((big.x) < 0) { big.dx = big.speed;}
@@ -130,15 +156,16 @@ function EnemyGeneretor() {
     for (let i = 0; i < numOfEnemies; i++) {
         e = new Enemy()
         AllEnemies.push(e);
+        container.append(e.s)
     }
 
 }
 function drawEnemies(){
     for (const e of AllEnemies) {
         e.isActive = true
-        context.drawImage(enmy, e.x, e.y, e.w, e.h);
         e.y += e.speed
-        if (e.y > 630) {
+        e.update()
+        if ((e.y + e.h) > 630) {
             e.x = Math.floor(Math.random() * (canvas.height - 100))
             e.y = 0;
             e.speed = Math.floor(Math.random() * 3) + (1 / 2);
@@ -166,7 +193,8 @@ function drawScore() {
         score = 0;
         player.speed =10;
         player.shot.speed = 15;
-
+        AllEnemies.forEach(e=> e.s.remove())
+        container.append(big.s)
     }
     if (player.level == 2 && score === 20) {
         player.hasWon = player.isGameOver = true;
@@ -228,6 +256,7 @@ function rocketEnemyCollision() {
                 if (isCollapsed(enemy, rocket)) {
                     enemy.x = Math.floor(Math.random() * (canvas.height - 100));
                     enemy.y = 0;
+                    enemy.update()
                     enemy.speed = Math.floor(Math.random() * 4) + (1 / 2);
                 }
             }
@@ -254,6 +283,7 @@ function shotEnemyCollision() {
             player.shot.isShoting = false;
             enemy.x = Math.floor(Math.random() * (canvas.height - 100));
             enemy.y = 0;
+            enemy.update()
             score++;
         }
     }
